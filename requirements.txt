@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+streamlit
+python-multipart
+pdfplumber
+sentence-transformers
+faiss-cpu
+langchain
+langchain-community
+langchain-ollama
+groq
+python-dotenv
+reportlab
+requests
+beautifulsoup4
+httpx
