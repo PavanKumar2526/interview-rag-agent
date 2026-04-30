@@ -464,9 +464,7 @@ function restart() {
 }
 
 function startVoiceInterview() {
-  showPage('page-voice');
-  document.getElementById('v-qtotal').textContent = voiceQuestions.length;
-  updateVoiceQuestion();
+  window.location.href = 'voice2.html';
 }
 
 function updateVoiceQuestion() {
