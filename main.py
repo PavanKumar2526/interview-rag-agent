@@ -55,10 +55,8 @@ async def upload_resume(file: UploadFile = File(...)):
 @app.post("/submit-answers")
 async def submit_answers(payload: dict):
     answers = payload.get("answers", [])
-    resume_data = session.get("resume_data", {})
-    questions = session.get("questions", [])
-
-    question_texts = [q["question"] for q in questions]
+    resume_data = payload.get("resume_data", session.get("resume_data", {}))
+    question_texts = payload.get("questions", [q["question"] for q in session.get("questions", [])])
     role = resume_data.get("role", "General")
 
     result = evaluate_full_interview(question_texts, answers, role)
@@ -70,7 +68,9 @@ async def submit_answers(payload: dict):
         "status": "success",
         "average_score": result["average_score"],
         "verdict": result["verdict"],
-        "report_path": report_path
+        "role": role,
+        "report_path": report_path,
+        "evaluations": result.get("evaluations", [])
     }
 
 @app.post("/upload-resume-jd")
