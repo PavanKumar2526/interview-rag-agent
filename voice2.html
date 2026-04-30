@@ -773,15 +773,11 @@ function showFinish() {
 }
 
 async function submitAndRedirect() {
-  // Save answers to sessionStorage for results page
-  const session = {
-    questions: questions,
-    answers: answers,
-    candidate: candidateName
-  };
-  sessionStorage.setItem('interviewSession', JSON.stringify(session));
+  document.getElementById('finish-screen').innerHTML = `
+    <div class="spinner"></div>
+    <div class="finish-sub">Evaluating your answers…</div>
+  `;
 
-  // Submit to backend for evaluation
   try {
     const payload = {
       questions: questions.map((q, i) => ({ ...q, answer: answers[i] || '' })),
@@ -794,7 +790,18 @@ async function submitAndRedirect() {
     });
     const data = await res.json();
     sessionStorage.setItem('voiceResult', JSON.stringify(data));
-  } catch(e) {}
+  } catch(e) {
+    sessionStorage.setItem('voiceResult', JSON.stringify({
+      average_score: 0,
+      verdict: 'Error - could not evaluate',
+      role: 'General',
+      evaluations: questions.map((q, i) => ({
+        question: q.question,
+        answer: answers[i] || '',
+        evaluation: { score: 0, technical_accuracy: 0, communication: 0, feedback: 'Evaluation failed' }
+      }))
+    }));
+  }
 
   window.location.href = 'results.html';
 }
