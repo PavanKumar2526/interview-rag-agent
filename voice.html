@@ -507,7 +507,7 @@ function animate() {
   drawOrb(smoothVol);
   requestAnimationFrame(animate);
 }
-animate();
+// Don't start animation until session is ready
 
 // --- Dots ---
 function renderDots() {
@@ -803,7 +803,6 @@ function setStatus(cls, text) {
 
 // --- Init ---
 window.addEventListener('load', () => {
-  // Load voices
   window.speechSynthesis.getVoices();
   speechSynthesis.onvoiceschanged = () => {};
 
@@ -818,6 +817,7 @@ window.addEventListener('load', () => {
   setTimeout(() => {
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('main-ui').style.display = 'flex';
+    animate(); // Start animation only after UI is shown
     loadQuestion();
   }, 1200);
 });
