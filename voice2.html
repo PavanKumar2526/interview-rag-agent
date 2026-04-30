@@ -5,462 +5,508 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>AI Interview Coach — Voice</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-:root {
-  --bg: #07080c; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.07);
-  --text: #e8e8f0; --muted: rgba(255,255,255,0.3);
-  --accent: #6c63ff; --accent2: #20c9a6;
-}
-body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-.ambient::before { content: ''; position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(108,99,255,0.06) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-50%); animation: ambientPulse 4s ease-in-out infinite; }
-.ambient::after { content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(32,201,166,0.04) 0%, transparent 70%); top: 40%; left: 55%; transform: translate(-50%,-50%); animation: ambientPulse 6s ease-in-out infinite reverse; }
-@keyframes ambientPulse { 0%,100%{opacity:0.5;transform:translate(-50%,-50%) scale(1);} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.15);} }
-.back { position: fixed; top: 24px; left: 24px; background: var(--surface); border: 0.5px solid var(--border); border-radius: 20px; padding: 8px 16px; color: var(--muted); font-size: 12px; cursor: pointer; text-decoration: none; transition: all 0.2s; z-index: 10; }
-.back:hover { color: var(--text); }
-.dots { position: fixed; top: 28px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 10; }
-.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: background 0.4s, transform 0.2s; }
-.dot.active { background: var(--accent); transform: scale(1.3); }
-.dot.done { background: rgba(108,99,255,0.3); }
-.ui { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; padding: 0 1.5rem; }
-.q-pill { background: var(--surface); border: 0.5px solid var(--border); border-radius: 24px; padding: 6px 16px; font-size: 11px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; font-family: 'DM Mono', monospace; margin-bottom: 16px; }
-.q-pill span { color: var(--accent); }
-.qtext { font-size: 16px; color: rgba(255,255,255,0.9); text-align: center; max-width: 420px; line-height: 1.75; margin-bottom: 16px; min-height: 52px; font-weight: 400; padding: 0 1rem; transition: color 0.3s; }
-.orb-wrap { position: relative; width: 200px; height: 200px; margin-bottom: 16px; cursor: pointer; }
-canvas#orb { width: 200px; height: 200px; border-radius: 50%; }
-.orb-ring { position: absolute; inset: -12px; border-radius: 50%; border: 1px solid rgba(108,99,255,0.15); animation: ringPulse 3s ease-in-out infinite; pointer-events: none; }
-.orb-ring2 { position: absolute; inset: -24px; border-radius: 50%; border: 1px solid rgba(108,99,255,0.07); animation: ringPulse 3s ease-in-out infinite 0.5s; pointer-events: none; }
-@keyframes ringPulse { 0%,100%{opacity:0.4;transform:scale(1);} 50%{opacity:1;transform:scale(1.03);} }
-.orb-ring.listening { border-color: rgba(32,201,166,0.4); animation: ringListen 0.8s ease-in-out infinite; }
-.orb-ring2.listening { border-color: rgba(32,201,166,0.15); animation: ringListen 0.8s ease-in-out infinite 0.2s; }
-@keyframes ringListen { 0%,100%{opacity:0.6;transform:scale(1);} 50%{opacity:1;transform:scale(1.06);} }
-.status { font-size: 13px; color: var(--muted); margin-bottom: 12px; min-height: 20px; text-align: center; font-family: 'DM Mono', monospace; letter-spacing: 0.5px; transition: color 0.4s; }
-.status.speaking { color: var(--accent); }
-.status.listening { color: var(--accent2); }
-.status.thinking { color: #f0a04b; }
-.controls { display: flex; gap: 20px; align-items: center; margin-bottom: 4px; }
-.cbtn { border: none; cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
-.cbtn-sm { width: 52px; height: 52px; background: var(--surface); border: 0.5px solid var(--border); color: var(--muted); }
-.cbtn-sm:hover { background: rgba(255,255,255,0.08); color: var(--text); }
-.cbtn-mic { width: 72px; height: 72px; background: rgba(108,99,255,0.1); border: 1.5px solid rgba(108,99,255,0.3); color: var(--accent); position: relative; }
-.cbtn-mic:hover { background: rgba(108,99,255,0.18); }
-.cbtn-mic.active { background: rgba(32,201,166,0.12); border-color: rgba(32,201,166,0.5); color: var(--accent2); }
-.cbtn-mic.active::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 1px solid rgba(32,201,166,0.25); animation: micPulse 1s ease-in-out infinite; }
-@keyframes micPulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.1);opacity:0.5;} }
-.cbtn-next { width: 52px; height: 52px; background: rgba(108,99,255,0.08); border: 0.5px solid rgba(108,99,255,0.2); color: rgba(108,99,255,0.6); }
-.cbtn-next:hover { background: rgba(108,99,255,0.15); color: var(--accent); }
-.transcript-box { margin-top: 12px; width: 100%; max-width: 420px; background: var(--surface); border: 0.5px solid var(--border); border-radius: 16px; padding: 14px 18px; font-size: 13px; color: var(--muted); min-height: 48px; line-height: 1.6; font-family: 'DM Mono', monospace; transition: border-color 0.3s; }
-.transcript-box.active { border-color: rgba(32,201,166,0.25); color: var(--text); }
-.transcript-box.has-text { color: rgba(255,255,255,0.7); }
-.vapi-badge { margin-top: 10px; font-size: 10px; color: rgba(255,255,255,0.15); font-family: 'DM Mono', monospace; letter-spacing: 1px; }
-.loading-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 50; }
-.spinner { width: 36px; height: 36px; border: 2px solid rgba(255,255,255,0.06); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+body{background:#0a0a0a;font-family:'Segoe UI',sans-serif;color:#fff;height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+
+/* MODE SELECT SCREEN */
+.mode-screen{display:flex;flex-direction:column;align-items:center;gap:2rem;padding:2rem;}
+.mode-screen h2{font-size:1.4rem;font-weight:500;color:#ccc;}
+.mode-screen p{color:#444;font-size:13px;text-align:center;max-width:320px;}
+.mode-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
+.mode-card{width:200px;background:#0d0d1e;border:1px solid #1e1e3a;border-radius:16px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.25s;}
+.mode-card:hover{transform:translateY(-3px);}
+.mode-card.friendly:hover,.mode-card.friendly.selected{border-color:#7F77DD;background:#0d0d28;}
+.mode-card.ruthless:hover,.mode-card.ruthless.selected{border-color:#e24b4a;background:#1a0d0d;}
+.mode-icon{font-size:2.5rem;margin-bottom:0.75rem;}
+.mode-title{font-size:15px;font-weight:600;margin-bottom:6px;}
+.mode-card.friendly .mode-title{color:#9D96E8;}
+.mode-card.ruthless .mode-title{color:#e24b4a;}
+.mode-desc{font-size:11px;color:#444;line-height:1.6;}
+.start-voice-btn{background:linear-gradient(135deg,#7F77DD,#534AB7);color:#fff;border:none;padding:14px 40px;border-radius:24px;font-size:15px;font-weight:600;cursor:pointer;opacity:0.4;pointer-events:none;transition:all 0.3s;}
+.start-voice-btn.ready{opacity:1;pointer-events:all;}
+.start-voice-btn.ready:hover{opacity:0.9;}
+
+/* INTERVIEW SCREEN */
+.interview-screen{display:none;flex-direction:column;align-items:center;width:100%;padding:0 1rem;}
+.back{position:fixed;top:20px;left:20px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:20px;padding:8px 16px;color:#555;font-size:12px;cursor:pointer;text-decoration:none;z-index:10;}
+.mode-badge{position:fixed;top:20px;right:20px;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.5px;}
+.mode-badge.friendly{background:rgba(127,119,221,0.15);border:0.5px solid rgba(127,119,221,0.3);color:#9D96E8;}
+.mode-badge.ruthless{background:rgba(226,75,74,0.12);border:0.5px solid rgba(226,75,74,0.3);color:#e24b4a;}
+.dots{position:fixed;top:24px;left:50%;transform:translateX(-50%);display:flex;gap:6px;}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.1);transition:background 0.3s;}
+.dot.active{background:#9D96E8;}
+.dot.done{background:rgba(127,119,221,0.3);}
+.orb-wrap{margin-bottom:28px;position:relative;}
+.status{font-size:14px;color:#555;margin-bottom:12px;min-height:20px;text-align:center;transition:color 0.4s;}
+.status.ai-speaking{color:#9D96E8;}
+.status.listening{color:#20c9a6;}
+.status.processing{color:#FF9800;}
+.qtext{font-size:13px;color:rgba(255,255,255,0.3);text-align:center;max-width:360px;line-height:1.7;margin-bottom:40px;min-height:44px;transition:color 0.3s;}
+.qtext.active{color:rgba(255,255,255,0.55);}
+.controls{display:flex;gap:20px;align-items:center;}
+.cbtn{border:none;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all 0.3s;}
+.cbtn-sm{width:52px;height:52px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);}
+.cbtn-sm:hover{background:rgba(255,255,255,0.1);}
+.cbtn-end{width:52px;height:52px;background:rgba(226,75,74,0.08);border:0.5px solid rgba(226,75,74,0.2);}
+.cbtn-mic{width:68px;height:68px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);}
+.cbtn-mic.ai-speaking{border-color:rgba(127,119,221,0.6);background:rgba(127,119,221,0.1);}
+.cbtn-mic.listening{border-color:rgba(32,201,166,0.6);background:rgba(32,201,166,0.1);}
+.cbtn-next{width:52px;height:52px;background:rgba(127,119,221,0.1);border:0.5px solid rgba(127,119,221,0.25);}
+.cbtn-next:hover{background:rgba(127,119,221,0.2);}
+
+/* LOADING */
+.loading-overlay{position:fixed;inset:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:50;}
+.spinner{width:40px;height:40px;border:2px solid #1a1a1a;border-top-color:#7F77DD;border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.loading-text { color: #444; font-size: 13px; font-family: 'DM Mono', monospace; }
-.finish-screen { position: fixed; inset: 0; background: var(--bg); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; z-index: 50; }
-.finish-icon { font-size: 48px; }
-.finish-title { font-size: 22px; font-weight: 500; }
-.finish-sub { font-size: 14px; color: var(--muted); text-align: center; max-width: 300px; line-height: 1.6; }
-.finish-btn { background: var(--accent); border: none; border-radius: 12px; padding: 12px 32px; color: #fff; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; transition: opacity 0.2s; }
-.finish-btn:hover { opacity: 0.85; }
+.loading-txt{color:#444;font-size:13px;}
+
+/* TRANSCRIPT (hidden debug) */
+.transcript-box{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);border:0.5px solid #1e1e3a;border-radius:8px;padding:8px 16px;font-size:11px;color:#444;max-width:400px;text-align:center;display:none;}
 </style>
 </head>
 <body>
-<div class="ambient"></div>
-<a class="back" href="index.html">← Back</a>
-<div class="dots" id="dots"></div>
 
-<div class="loading-screen" id="loading-screen">
+<!-- LOADING -->
+<div class="loading-overlay" id="loader">
   <div class="spinner"></div>
-  <div class="loading-text" id="loading-text">Connecting to AI interviewer...</div>
+  <div class="loading-txt" id="loader-txt">Loading your interview...</div>
 </div>
 
-<div class="finish-screen" id="finish-screen">
-  <div class="finish-icon">✦</div>
-  <div class="finish-title">Interview Complete</div>
-  <div class="finish-sub">All questions answered. Evaluating your responses...</div>
-  <button class="finish-btn" onclick="submitAndRedirect()">View Results →</button>
-</div>
+<!-- MODE SELECT -->
+<div class="mode-screen" id="mode-screen" style="display:none;">
+  <h2>Choose Your Interview Style</h2>
+  <p>This determines how your AI interviewer will behave during the session</p>
 
-<div class="ui" id="main-ui" style="display:none;">
-  <div class="q-pill">Question <span id="q-num">1</span> of <span id="q-total">10</span></div>
-  <div class="qtext" id="qtext">Preparing your question...</div>
-  <div class="status" id="status">Connecting...</div>
-  <div class="orb-wrap" id="orb-wrap" onclick="toggleCall()">
-    <canvas id="orb" width="200" height="200"></canvas>
-    <div class="orb-ring" id="orb-ring"></div>
-    <div class="orb-ring2" id="orb-ring2"></div>
+  <div class="mode-cards">
+    <div class="mode-card friendly" onclick="selectMode('friendly')">
+      <div class="mode-icon">😊</div>
+      <div class="mode-title">Friendly</div>
+      <div class="mode-desc">Supportive and encouraging. Great for practice and building confidence.</div>
+    </div>
+    <div class="mode-card ruthless" onclick="selectMode('ruthless')">
+      <div class="mode-icon">😤</div>
+      <div class="mode-title">Ruthless</div>
+      <div class="mode-desc">Senior tech lead energy. Challenges every answer. High pressure. Real MNC feel.</div>
+    </div>
   </div>
+
+  <button class="start-voice-btn" id="start-voice-btn" onclick="startVapi()">
+    Start Interview →
+  </button>
+</div>
+
+<!-- INTERVIEW -->
+<div class="interview-screen" id="interview-screen">
+  <a class="back" onclick="endInterview()">← End</a>
+  <div class="mode-badge" id="mode-badge"></div>
+  <div class="dots" id="dots"></div>
+
+  <div class="orb-wrap">
+    <canvas id="orb" width="220" height="220"></canvas>
+  </div>
+
+  <p class="status" id="status">Connecting...</p>
+  <p class="qtext" id="qtext"></p>
+
   <div class="controls">
-    <button class="cbtn cbtn-sm" onclick="replayQuestion()" title="Replay question" id="replay-btn">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.85"/>
-      </svg>
+    <button class="cbtn cbtn-end" onclick="endInterview()" title="End interview">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e24b4a" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
-    <button class="cbtn cbtn-mic" id="mic-btn" onclick="toggleCall()">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>
-        <line x1="8" y1="23" x2="16" y2="23"/>
-      </svg>
+    <button class="cbtn cbtn-mic" id="micbtn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
     </button>
-    <button class="cbtn cbtn-next" onclick="nextQuestion()" title="Next question">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-      </svg>
+    <button class="cbtn cbtn-next" onclick="skipQuestion()" title="Skip question">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9D96E8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
   </div>
-  <div class="transcript-box" id="transcript">Your answer will appear here...</div>
-  <div class="vapi-badge">POWERED BY VAPI</div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/vapi.umd.js"></script>
+<div class="transcript-box" id="transcript"></div>
+
+<!-- Vapi SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/vapi.js"></script>
+
 <script>
-const API = "https://interview-rag-agent.onrender.com";
 const VAPI_KEY = "c03fee34-9c21-4bfb-87ed-ef719024b04e";
 const VAPI_ASSISTANT_ID = "f52322ad-6ee6-46a6-806f-bfaef757361a";
+const API = "https://interview-rag-agent.onrender.com";
 
-const voiceSession = JSON.parse(sessionStorage.getItem('voiceSession') || '{}');
-const questions = voiceSession.questions || [];
-const candidateName = voiceSession.candidate || 'Candidate';
-
-let answers = [], idx = 0;
-let callActive = false;
-let isSpeaking = false, isListening = false;
-let smoothVol = 0, t = 0;
-let audioCtx, analyser, dataArray;
-let currentTranscript = '';
 let vapi = null;
+let selectedMode = null;
+let questions = [];
+let answers = [];
+let currentQ = 0;
+let smoothVol = 0;
+let t = 0;
+let orbState = 'idle'; // idle | speaking | listening
+let callActive = false;
+let transcriptBuffer = '';
 
-// --- Orb ---
+// ── System Prompts ──
+const FRIENDLY_PROMPT = `You are a warm, supportive AI Interview Coach conducting a mock interview. 
+
+Your behavior:
+1. Ask exactly these questions one by one in order — do not skip or add questions
+2. After each answer, respond encouragingly: "Good answer!", "Nice point!", "I like that" then move on
+3. If the candidate struggles, gently guide: "Take your time", "Think about a real example"
+4. Keep acknowledgments SHORT — max 1 sentence before next question
+5. Be patient, professional, and encouraging throughout
+6. After the final question say exactly: "Wonderful session! Thank you for completing the interview. Please click View Results to see your detailed score."
+7. Do NOT evaluate scores during the interview`;
+
+const RUTHLESS_PROMPT = `You are a senior tech lead at a top MNC conducting a high-pressure final round technical interview.
+
+Your behavior:
+1. Ask exactly these questions one by one in order — do not skip or add questions
+2. After each answer, challenge it immediately:
+   - If vague: "That's too generic. Give me a specific real-world example with numbers."
+   - If weak: "A fresher would say that. Think deeper. What's the actual technical reason?"
+   - If strong: "Fine. Next question." (move on quickly, minimal praise)
+   - If very strong: "Acceptable. Let's continue."
+3. Push follow-ups: "But what if the dataset had 50 million rows?", "How would you optimize that?"
+4. Be cold, direct, and unimpressed easily. Create pressure.
+5. Never accept the first answer without at least one challenge
+6. Keep your responses SHORT and sharp — no long speeches
+7. After the final question say exactly: "Interview complete. Click View Results for your evaluation."
+8. Do NOT evaluate scores during the interview`;
+
+// ── Orb Canvas ──
 const canvas = document.getElementById('orb');
 const ctx = canvas.getContext('2d');
-const W = 200, H = 200, CX = W/2, CY = H/2;
-const N = 750;
-const pts = [];
-for(let i = 0; i < N; i++){
-  const u = Math.random(), v = Math.random();
+const W=220,H=220,CX=W/2,CY=H/2;
+const N=750;
+const pts=[];
+for(let i=0;i<N;i++){
+  const u=Math.random(),v=Math.random();
   pts.push({
-    theta: 2*Math.PI*u, phi: Math.acos(2*v-1),
-    r: 78+Math.random()*10,
-    ox: Math.random()*Math.PI*2, oy: Math.random()*Math.PI*2,
-    sp: 0.002+Math.random()*0.003,
+    theta:2*Math.PI*u,
+    phi:Math.acos(2*v-1),
+    r:78+Math.random()*10,
+    ox:Math.random()*Math.PI*2,
+    oy:Math.random()*Math.PI*2,
+    sp:0.002+Math.random()*0.003,
+    sz:0.35+Math.random()*1.1,
+    alpha:0.15+Math.random()*0.5
   });
 }
 
-function drawOrb(vol) {
-  ctx.clearRect(0, 0, W, H);
-  let coreColor, glowColor, dotColor;
-  if (isSpeaking) {
-    coreColor = 'rgba(108,99,255,0.15)'; glowColor = 'rgba(108,99,255,0.3)'; dotColor = [108,99,255];
-  } else if (isListening) {
-    coreColor = 'rgba(32,201,166,0.12)'; glowColor = 'rgba(32,201,166,0.25)'; dotColor = [32,201,166];
+function drawOrb(){
+  requestAnimationFrame(drawOrb);
+  ctx.clearRect(0,0,W,H);
+  t+=0.014;
+
+  let targetVol = 0;
+  if(orbState==='speaking') targetVol = 0.3+Math.sin(t*6)*0.25;
+  else if(orbState==='listening') targetVol = 0.15+Math.sin(t*8)*0.15;
+  smoothVol += (targetVol - smoothVol)*0.12;
+
+  const breathe=1+Math.sin(t*0.85)*0.022;
+  const voice=1+smoothVol*2.8;
+  const scale=breathe*voice;
+
+  const sorted=[...pts].sort((a,b)=>a.r*Math.cos(a.phi)-b.r*Math.cos(b.phi));
+  sorted.forEach(p=>{
+    p.ox+=p.sp*0.8; p.oy+=p.sp;
+    const noise=2.5+smoothVol*22;
+    const nr=(p.r+Math.sin(p.ox)*noise+Math.cos(p.oy)*noise*0.6)*scale;
+    const x=CX+nr*Math.sin(p.phi)*Math.cos(p.theta);
+    const y=CY+nr*Math.sin(p.phi)*Math.sin(p.theta)*0.93;
+    const z=nr*Math.cos(p.phi);
+    const zn=(z+100)/200;
+    const a=Math.min(p.alpha*(0.25+zn*0.75)*(1+smoothVol*1.2),0.92);
+    const sz=Math.min(p.sz*(0.35+zn*0.85)*(1+smoothVol*1.8),3.2);
+    ctx.beginPath(); ctx.arc(x,y,sz,0,Math.PI*2);
+
+    if(orbState==='speaking'){
+      // Purple when AI speaks
+      const rv=Math.floor(80+zn*60+smoothVol*40);
+      const gv=Math.floor(60+zn*40);
+      const bv=Math.floor(180+zn*60+smoothVol*40);
+      ctx.fillStyle=`rgba(${rv},${gv},${bv},${a})`;
+    } else if(orbState==='listening'){
+      // Teal when listening
+      const gv=Math.floor(150+zn*80+smoothVol*60);
+      ctx.fillStyle=`rgba(10,${gv},140,${a})`;
+    } else {
+      // Grey idle
+      const b=Math.floor(100+zn*100);
+      ctx.fillStyle=`rgba(${b},${b},${b},${a})`;
+    }
+    ctx.fill();
+  });
+}
+drawOrb();
+
+// ── Dots ──
+function renderDots(){
+  const el=document.getElementById('dots');
+  el.innerHTML='';
+  questions.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(i===0?' active':'');
+    d.id='dot-'+i;
+    el.appendChild(d);
+  });
+}
+
+function updateDot(idx){
+  questions.forEach((_,i)=>{
+    const d=document.getElementById('dot-'+i);
+    if(d) d.className='dot'+(i<idx?' done':i===idx?' active':'');
+  });
+}
+
+// ── Mode Select ──
+function selectMode(mode){
+  selectedMode = mode;
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelector('.mode-card.'+mode).classList.add('selected');
+  document.getElementById('start-voice-btn').classList.add('ready');
+
+  // Update start button color for ruthless
+  if(mode==='ruthless'){
+    document.getElementById('start-voice-btn').style.background='linear-gradient(135deg,#e24b4a,#a33)';
   } else {
-    coreColor = 'rgba(255,255,255,0.03)'; glowColor = 'rgba(108,99,255,0.08)'; dotColor = [120,115,200];
+    document.getElementById('start-voice-btn').style.background='linear-gradient(135deg,#7F77DD,#534AB7)';
   }
-  const grd = ctx.createRadialGradient(CX,CY,0,CX,CY,90);
-  grd.addColorStop(0, glowColor); grd.addColorStop(1,'transparent');
-  ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(CX,CY,90,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = coreColor; ctx.beginPath(); ctx.arc(CX,CY,80,0,Math.PI*2); ctx.fill();
-  const boost = 1 + vol * 20;
-  const baseAlpha = isSpeaking ? 0.7 : isListening ? 0.6 : 0.35;
-  pts.forEach(p => {
-    const rx = p.r*boost*(1+0.08*Math.sin(t*0.8+p.ox));
-    const ry = p.r*boost*(1+0.08*Math.sin(t*0.6+p.oy));
-    const x = CX + rx*Math.sin(p.phi)*Math.cos(p.theta);
-    const y = CY + ry*Math.sin(p.phi)*Math.sin(p.theta)*0.45;
-    const z = ry*Math.cos(p.phi);
-    const depth = (z + p.r*boost)/(2*p.r*boost);
-    const alpha = baseAlpha * depth * (0.6+0.4*depth);
-    const size = Math.max(0.1, 0.9*depth);
-    ctx.beginPath(); ctx.arc(x,y,size,0,Math.PI*2);
-    ctx.fillStyle = `rgba(${dotColor[0]},${dotColor[1]},${dotColor[2]},${alpha})`; ctx.fill();
-    p.theta += p.sp*(1+vol*2);
-  });
-  t += 0.015;
 }
 
-function animate() {
-  let vol = 0;
-  if (analyser && (isSpeaking || isListening)) {
-    analyser.getByteFrequencyData(dataArray);
-    vol = dataArray.reduce((a,b)=>a+b,0)/dataArray.length/255;
-  } else if (isSpeaking || isListening) {
-    vol = 0.3 + 0.2*Math.sin(t*3);
+// ── Init ──
+window.onload = () => {
+  const stored = sessionStorage.getItem('voiceSession');
+  if(!stored){
+    document.getElementById('loader-txt').textContent='No session found. Go back and upload your resume.';
+    return;
   }
-  smoothVol = smoothVol*0.85 + vol*0.15;
-  drawOrb(smoothVol);
-  requestAnimationFrame(animate);
-}
+  const data = JSON.parse(stored);
+  questions = data.questions || [];
+  answers = new Array(questions.length).fill('');
 
-function renderDots() {
-  const d = document.getElementById('dots');
-  d.innerHTML = '';
-  questions.forEach((_,i) => {
-    const dot = document.createElement('div');
-    dot.className = 'dot'+(i===idx?' active':i<idx?' done':'');
-    d.appendChild(dot);
-  });
-}
+  document.getElementById('loader').style.display='none';
+  document.getElementById('mode-screen').style.display='flex';
+};
 
-function setStatus(cls, text) {
-  const s = document.getElementById('status');
-  s.className = 'status'+(cls?' '+cls:'');
-  s.textContent = text;
-}
+// ── Start Vapi ──
+async function startVapi(){
+  if(!selectedMode) return;
 
-function setOrbListening(on) {
-  isListening = on;
-  document.getElementById('orb-ring').classList.toggle('listening', on);
-  document.getElementById('orb-ring2').classList.toggle('listening', on);
-  document.getElementById('mic-btn').classList.toggle('active', on);
-}
+  document.getElementById('mode-screen').style.display='none';
+  document.getElementById('loader').style.display='flex';
+  document.getElementById('loader-txt').textContent='Connecting to AI interviewer...';
 
-// --- Vapi Setup ---
-function initVapi() {
-  vapi = new Vapi(VAPI_KEY);
+  // Build question list for prompt
+  const qList = questions.map((q,i)=>`${i+1}. ${q.question}`).join('\n');
+  const systemPrompt = (selectedMode==='friendly'?FRIENDLY_PROMPT:RUTHLESS_PROMPT)
+    + `\n\nHere are the interview questions to ask in order:\n${qList}`;
 
-  vapi.on('call-start', () => {
-    callActive = true;
-    setStatus('speaking', 'AI is speaking...');
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('main-ui').style.display = 'flex';
-    loadQuestion();
-  });
+  const firstMsg = selectedMode==='friendly'
+    ? "Hello! I'm your AI Interview Coach today. I'm here to help you practice and grow. Let's have a great session! Ready to begin?"
+    : "Let's get started. I'll be direct — this is a high-pressure interview. I expect clear, specific answers. Are you ready?";
 
-  vapi.on('call-end', () => {
-    callActive = false;
-    setOrbListening(false);
-    isSpeaking = false;
-    setStatus('', 'Call ended');
-  });
-
-  vapi.on('speech-start', () => {
-    isSpeaking = true;
-    setOrbListening(false);
-    setStatus('speaking', 'AI is speaking...');
-  });
-
-  vapi.on('speech-end', () => {
-    isSpeaking = false;
-    setOrbListening(true);
-    setStatus('listening', 'Listening to you...');
-  });
-
-  vapi.on('volume-level', (vol) => {
-    smoothVol = smoothVol * 0.7 + vol * 0.3;
-  });
-
-  vapi.on('message', (msg) => {
-    // Capture transcript from Vapi messages
-    if (msg.type === 'transcript' && msg.role === 'user') {
-      currentTranscript = msg.transcript || '';
-      const box = document.getElementById('transcript');
-      box.textContent = currentTranscript;
-      box.classList.add('active', 'has-text');
-      // Auto-save answer
-      answers[idx] = currentTranscript;
-    }
-
-    // Detect when AI asks next question
-    if (msg.type === 'transcript' && msg.role === 'assistant') {
-      const text = msg.transcript || '';
-      // Check if question matches current
-      const q = questions[idx];
-      if (q && text.includes(q.question.substring(0, 20))) {
-        loadQuestion();
-      }
-    }
-  });
-
-  vapi.on('error', (e) => {
-    console.error('Vapi error:', e);
-    setStatus('', 'Connection error — using browser voice');
-    fallbackToWebSpeech();
-  });
-}
-
-async function startVapiCall() {
-  setStatus('thinking', 'Connecting...');
   try {
-    const questionList = questions.map((q,i) => `Question ${i+1}: ${q.question}`).join('\n');
-    await vapi.start({
-      assistantId: VAPI_ASSISTANT_ID,
+    vapi = new Vapi(VAPI_KEY);
+    setupVapiEvents();
+
+    await vapi.start(VAPI_ASSISTANT_ID, {
       assistantOverrides: {
-        firstMessage: `Hello ${candidateName}! I'm your AI Interview Coach. I'll be asking you ${questions.length} questions. Let's begin!\n\nQuestion 1: ${questions[0]?.question || ''}`,
-        systemPrompt: `You are an AI Interview Coach conducting a mock interview. Ask the following questions one by one, wait for the candidate's answer after each question, then move to the next.\n\nQuestions:\n${questionList}\n\nAfter all questions are answered, say "Thank you for completing the interview. Your responses will now be evaluated."`,
+        firstMessage: firstMsg,
+        model: {
+          provider: "openai",
+          model: "gpt-4o-mini",
+          messages: [{ role: "system", content: systemPrompt }]
+        }
       }
     });
+
   } catch(e) {
-    console.error('Vapi start error:', e);
+    console.error('Vapi error:', e);
     fallbackToWebSpeech();
   }
 }
 
-async function toggleCall() {
-  if (!callActive) {
-    await startVapiCall();
-  } else {
-    vapi.stop();
-    setOrbListening(false);
-    isSpeaking = false;
-  }
-}
+// ── Vapi Events ──
+function setupVapiEvents(){
+  vapi.on('call-start', ()=>{
+    callActive = true;
+    document.getElementById('loader').style.display='none';
+    document.getElementById('interview-screen').style.display='flex';
 
-// --- Fallback: Web Speech API ---
-let recognition, synth = window.speechSynthesis;
-let usingFallback = false;
+    const badge = document.getElementById('mode-badge');
+    badge.textContent = selectedMode==='friendly' ? '😊 Friendly Mode' : '😤 Ruthless Mode';
+    badge.className = 'mode-badge '+selectedMode;
 
-function fallbackToWebSpeech() {
-  usingFallback = true;
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('main-ui').style.display = 'flex';
-  loadQuestion();
-  speakQuestion(questions[idx]?.question || '');
-}
+    renderDots();
+    setStatus('AI is speaking...','ai-speaking');
+    orbState='speaking';
+  });
 
-function speakQuestion(text) {
-  synth.cancel();
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = 0.95; utter.pitch = 1;
-  const voices = synth.getVoices();
-  const preferred = voices.find(v => v.name.includes('Google') || v.name.includes('Samantha'));
-  if (preferred) utter.voice = preferred;
-  utter.onstart = () => { isSpeaking = true; setStatus('speaking', 'AI is speaking...'); };
-  utter.onend = () => {
-    isSpeaking = false;
-    startFallbackListening();
-  };
-  synth.speak(utter);
-}
+  vapi.on('speech-start', ()=>{
+    orbState='speaking';
+    setStatus('AI is speaking...','ai-speaking');
+    document.getElementById('micbtn').className='cbtn cbtn-mic ai-speaking';
+  });
 
-function startFallbackListening() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) return;
-  recognition = new SR();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = 'en-US';
-  recognition.onresult = (e) => {
-    let final = '', interim = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) final += e.results[i][0].transcript;
-      else interim += e.results[i][0].transcript;
+  vapi.on('speech-end', ()=>{
+    orbState='listening';
+    setStatus('Listening to you...','listening');
+    document.getElementById('micbtn').className='cbtn cbtn-mic listening';
+  });
+
+  vapi.on('volume-level', (vol)=>{
+    if(orbState==='listening') smoothVol=vol*0.8;
+  });
+
+  vapi.on('message', (msg)=>{
+    if(msg.type==='transcript'){
+      const text = msg.transcript || '';
+      if(msg.role==='assistant'){
+        // detect which question is being asked
+        questions.forEach((q,i)=>{
+          if(text.includes(q.question.substring(0,30))){
+            currentQ=i;
+            updateDot(i);
+            document.getElementById('qtext').textContent=q.question;
+            document.getElementById('qtext').classList.add('active');
+          }
+        });
+        // detect end
+        if(text.includes('View Results') || text.includes('Click View Results')){
+          setTimeout(()=>endAndSubmit(), 3000);
+        }
+      }
+      if(msg.role==='user'){
+        answers[currentQ] = (answers[currentQ]||'') + ' ' + text;
+        document.getElementById('transcript').textContent='You: '+text;
+        document.getElementById('transcript').style.display='block';
+      }
     }
-    currentTranscript = final || interim;
-    const box = document.getElementById('transcript');
-    box.textContent = currentTranscript;
-    box.classList.add('active');
-    if (final) { box.classList.add('has-text'); answers[idx] = currentTranscript; }
-  };
-  recognition.onerror = () => {};
-  recognition.onend = () => { if (isListening) recognition.start(); };
-  isListening = true;
-  setOrbListening(true);
-  setStatus('listening', 'Listening to you...');
-  recognition.start();
+  });
+
+  vapi.on('call-end', ()=>{
+    callActive=false;
+    orbState='idle';
+    if(answers.some(a=>a.trim())) endAndSubmit();
+  });
+
+  vapi.on('error', (e)=>{
+    console.error('Vapi error:', e);
+    fallbackToWebSpeech();
+  });
 }
 
-function stopFallbackListening() {
-  if (recognition) recognition.stop();
-  isListening = false;
-  setOrbListening(false);
+function setStatus(text, cls){
+  const el=document.getElementById('status');
+  el.textContent=text;
+  el.className='status '+(cls||'');
 }
 
-// --- Navigation ---
-function loadQuestion() {
-  const q = questions[idx];
-  if (!q) return;
-  document.getElementById('q-num').textContent = idx + 1;
-  document.getElementById('q-total').textContent = questions.length;
-  document.getElementById('qtext').textContent = q.question;
-  document.getElementById('transcript').textContent = answers[idx] || 'Your answer will appear here...';
-  document.getElementById('transcript').className = 'transcript-box' + (answers[idx] ? ' has-text' : '');
-  renderDots();
-  currentTranscript = answers[idx] || '';
-}
-
-function replayQuestion() {
-  if (usingFallback) speakQuestion(questions[idx]?.question || '');
-}
-
-function nextQuestion() {
-  if (usingFallback) stopFallbackListening();
-  answers[idx] = currentTranscript;
-  if (idx < questions.length - 1) {
-    idx++;
-    loadQuestion();
-    if (usingFallback) speakQuestion(questions[idx]?.question || '');
-  } else {
-    if (vapi && callActive) vapi.stop();
-    showFinish();
+// ── End & Submit ──
+async function endAndSubmit(){
+  if(!answers.some(a=>a.trim())){
+    window.location.href='index.html';
+    return;
   }
-}
 
-function showFinish() {
-  synth.cancel();
-  document.getElementById('finish-screen').style.display = 'flex';
-}
+  document.getElementById('loader').style.display='flex';
+  document.getElementById('loader-txt').textContent='Evaluating your performance...';
+  document.getElementById('interview-screen').style.display='none';
 
-async function submitAndRedirect() {
-  document.getElementById('finish-screen').innerHTML = '<div class="spinner"></div><div class="finish-sub">Evaluating your answers...</div>';
+  const finalAnswers = answers.map((a,i)=>a.trim()||'No answer provided for question '+(i+1));
+
   try {
-    const payload = {
-      answers: answers.map(a => a || ''),
-      questions: questions.map(q => q.question),
-      resume_data: voiceSession.resume || {},
-      candidate: candidateName
-    };
-    const res = await fetch(API + '/submit-answers', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+    const res = await fetch(API+'/submit-answers',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({answers:finalAnswers})
     });
     const data = await res.json();
     sessionStorage.setItem('voiceResult', JSON.stringify(data));
-  } catch(e) {
-    sessionStorage.setItem('voiceResult', JSON.stringify({
-      average_score: 0, verdict: 'Error', role: 'General',
-      evaluations: questions.map((q,i) => ({
-        question: q.question, answer: answers[i] || '',
-        evaluation: { score: 0, technical_accuracy: 0, communication: 0, feedback: 'Evaluation failed' }
-      }))
-    }));
+    window.location.href='results.html';
+  } catch(e){
+    document.getElementById('loader-txt').textContent='Error submitting. Please try again.';
   }
-  window.location.href = 'results.html';
 }
 
-// --- Init ---
-window.addEventListener('load', async () => {
-  if (!questions.length) {
-    alert('No session found. Please upload your resume first.');
-    window.location.href = 'index.html';
+function endInterview(){
+  if(confirm('End interview and go back to home?')){
+    if(vapi && callActive) vapi.stop();
+    window.location.href='index.html';
+  }
+}
+
+function skipQuestion(){
+  currentQ = Math.min(currentQ+1, questions.length-1);
+  updateDot(currentQ);
+  document.getElementById('qtext').textContent=questions[currentQ]?.question||'';
+}
+
+// ── Fallback: Web Speech API ──
+function fallbackToWebSpeech(){
+  document.getElementById('loader').style.display='none';
+  document.getElementById('interview-screen').style.display='flex';
+
+  const badge=document.getElementById('mode-badge');
+  badge.textContent=selectedMode==='friendly'?'😊 Friendly (Fallback)':'😤 Ruthless (Fallback)';
+  badge.className='mode-badge '+selectedMode;
+
+  renderDots();
+  setStatus('Using browser voice (Vapi unavailable)','processing');
+
+  setTimeout(()=>speakQuestion(0), 1000);
+}
+
+function speakQuestion(idx){
+  if(idx>=questions.length){endAndSubmit();return;}
+  currentQ=idx;
+  updateDot(idx);
+  const q=questions[idx];
+  document.getElementById('qtext').textContent=q.question;
+  document.getElementById('qtext').classList.add('active');
+
+  const prefix = selectedMode==='ruthless'
+    ? ['Listen carefully.','Next question.','Answer this.'][idx%3]+' '
+    : ['','Let me ask you: ','Here\'s the next one: '][idx%3];
+
+  const utt=new SpeechSynthesisUtterance(prefix+q.question);
+  utt.rate=selectedMode==='ruthless'?1.1:0.95;
+  utt.pitch=selectedMode==='ruthless'?0.85:1.05;
+  orbState='speaking';
+  setStatus('AI is speaking...','ai-speaking');
+
+  utt.onend=()=>{
+    orbState='listening';
+    setStatus('Your turn — speak your answer','listening');
+    listenAnswer(idx);
+  };
+  speechSynthesis.speak(utt);
+}
+
+function listenAnswer(idx){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    const ans=prompt('Type your answer for Q'+(idx+1)+':');
+    answers[idx]=ans||'No answer';
+    speakQuestion(idx+1);
     return;
   }
-  answers = new Array(questions.length).fill('');
-  renderDots();
-  animate();
-
-  // Setup mic visualizer
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 256;
-    dataArray = new Uint8Array(analyser.frequencyBinCount);
-    audioCtx.createMediaStreamSource(stream).connect(analyser);
-  } catch(e) {}
-
-  // Init Vapi
-  document.getElementById('loading-text').textContent = 'Connecting to AI interviewer...';
-  initVapi();
-
-  // Auto-start call after 1.5s
-  setTimeout(() => {
-    startVapiCall();
-  }, 1500);
-});
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const rec=new SR();
+  rec.lang='en-US';
+  rec.continuous=false;
+  rec.interimResults=false;
+  rec.onresult=(e)=>{
+    answers[idx]=e.results[0][0].transcript;
+    document.getElementById('transcript').textContent='You: '+answers[idx];
+    document.getElementById('transcript').style.display='block';
+    setStatus('Got it. Moving on...','processing');
+    orbState='idle';
+    setTimeout(()=>speakQuestion(idx+1),1200);
+  };
+  rec.onerror=()=>{
+    answers[idx]='No answer captured';
+    setTimeout(()=>speakQuestion(idx+1),800);
+  };
+  rec.start();
+}
 </script>
 </body>
 </html>
