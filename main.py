@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 import shutil, os, json
 
@@ -125,3 +126,14 @@ async def upload_resume_jd(file: UploadFile = File(...), jd_url: str = ""):
 @app.get("/get-report")
 async def get_report():
     return session.get("result", {})
+
+@app.get("/download-report")
+async def download_report():
+    path = "reports/interview_report.pdf"
+    if not os.path.exists(path):
+        return {"error": "Report not found. Please complete an interview first."}
+    return FileResponse(
+        path,
+        media_type="application/pdf",
+        filename="interview_report.pdf"
+    )

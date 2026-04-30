@@ -96,7 +96,7 @@ function render(data){
   });
 
   html += `
-  <button class="download-btn" onclick="alert('PDF report is saved on the server. Check reports/ folder.')">⬇ Download PDF Report</button>
+  <button class="download-btn" onclick="window.open('https://interview-rag-agent.onrender.com/download-report', '_blank')">⬇ Download PDF Report</button>
   <button class="restart-btn" onclick="window.location.href='index.html'">Start New Interview</button>`;
 
   document.getElementById('content').innerHTML = html;
