@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Interview Coach — Results</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0a0a;font-family:'Segoe UI',sans-serif;color:#fff;min-height:100vh;padding:2rem 1rem;}
+.wrap{max-width:600px;margin:0 auto;}
+.back{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:20px;padding:8px 16px;color:#555;font-size:12px;cursor:pointer;text-decoration:none;margin-bottom:2rem;}
+.score-card{background:#0d0d1e;border:0.5px solid #1e1e3a;border-radius:16px;padding:2rem;text-align:center;margin-bottom:1rem;}
+.score-ring{width:100px;height:100px;border-radius:50%;margin:0 auto 1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-num{font-size:32px;font-weight:700;}
+.score-denom{font-size:13px;color:#555;}
+.verdict{font-size:16px;font-weight:600;margin-bottom:4px;}
+.verdict.excellent{color:#4CAF50;}
+.verdict.good{color:#7F77DD;}
+.verdict.average{color:#FF9800;}
+.verdict.poor{color:#F44336;}
+.role-text{color:#444;font-size:13px;}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
+.metric{background:#0d0d1e;border:0.5px solid #1e1e3a;border-radius:10px;padding:1rem;text-align:center;}
+.metric-val{font-size:20px;font-weight:600;color:#7F77DD;}
+.metric-label{font-size:11px;color:#444;margin-top:3px;}
+.section-title{color:#333;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;}
+.eval-card{background:#0d0d1e;border:0.5px solid #1e1e3a;border-radius:12px;padding:1.25rem;margin-bottom:10px;}
+.eval-q{color:#ccc;font-size:13px;font-weight:500;margin-bottom:6px;line-height:1.5;}
+.eval-a{color:#333;font-size:12px;margin-bottom:10px;font-style:italic;}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.pill{background:#131326;color:#9D96E8;padding:3px 10px;border-radius:10px;font-size:11px;border:0.5px solid #1e1e3a;}
+.feedback{color:#4CAF50;font-size:12px;padding-left:10px;border-left:2px solid #1a3a2a;line-height:1.5;}
+.download-btn{width:100%;background:linear-gradient(135deg,#7F77DD,#534AB7);color:#fff;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px;margin-top:1rem;}
+.restart-btn{width:100%;background:transparent;color:#333;border:0.5px solid #1e1e3a;padding:12px;border-radius:10px;font-size:14px;cursor:pointer;}
+.empty{color:#333;font-size:14px;text-align:center;padding:3rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← New Interview</a>
+
+  <div id="content">
+    <div class="empty">Loading results...</div>
+  </div>
+</div>
+
+<script>
+window.onload = () => {
+  const raw = sessionStorage.getItem('voiceResult');
+  if(!raw){ document.getElementById('content').innerHTML='<div class="empty">No results found. Please complete an interview first.</div>'; return; }
+  const data = JSON.parse(raw);
+  render(data);
+};
+
+function render(data){
+  const score = data.average_score || 0;
+  const verdict = data.verdict || '';
+  const evals = data.evaluations || [];
+  const role = data.role || '';
+
+  const vclass = score>=8?'excellent':score>=6?'good':score>=4?'average':'poor';
+  const ringColor = score>=8?'#1a3a1a':score>=6?'#1a1a3a':score>=4?'#2a1a0a':'#2a0a0a';
+  const numColor = score>=8?'#4CAF50':score>=6?'#7F77DD':score>=4?'#FF9800':'#F44336';
+
+  let html = `
+  <div class="score-card">
+    <div class="score-ring" style="background:${ringColor};">
+      <div class="score-num" style="color:${numColor};">${score}</div>
+      <div class="score-denom">/10</div>
+    </div>
+    <div class="verdict ${vclass}">${verdict.split('-')[0].trim()}</div>
+    <div class="role-text">${role} Interview</div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><div class="metric-val">${evals.length}</div><div class="metric-label">Questions</div></div>
+    <div class="metric"><div class="metric-val">${score}/10</div><div class="metric-label">Avg Score</div></div>
+    <div class="metric"><div class="metric-val">${score>=6?'Pass':'Review'}</div><div class="metric-label">Status</div></div>
+  </div>
+
+  <p class="section-title">Detailed Evaluation</p>`;
+
+  evals.forEach((item,i)=>{
+    const ev = item.evaluation || {};
+    html += `
+    <div class="eval-card">
+      <div class="eval-q">Q${i+1}: ${item.question}</div>
+      <div class="eval-a">"${(item.answer||'').substring(0,120)}${(item.answer||'').length>120?'...':''}"</div>
+      <div class="pills">
+        <span class="pill">Score: ${ev.score||0}/10</span>
+        <span class="pill">Technical: ${ev.technical_accuracy||0}/10</span>
+        <span class="pill">Communication: ${ev.communication||0}/10</span>
+      </div>
+      <div class="feedback">${ev.feedback||''}</div>
+    </div>`;
+  });
+
+  html += `
+  <button class="download-btn" onclick="alert('PDF report is saved on the server. Check reports/ folder.')">⬇ Download PDF Report</button>
+  <button class="restart-btn" onclick="window.location.href='index.html'">Start New Interview</button>`;
+
+  document.getElementById('content').innerHTML = html;
+}
+</script>
+</body>
+</html>
