@@ -372,13 +372,14 @@ canvas#orb {
 <div class="ui" id="main-ui" style="display:none;">
   <div class="q-pill">Question <span id="q-num">1</span> of <span id="q-total">10</span></div>
 
+  <div class="qtext" id="qtext"></div>
   <div class="orb-wrap" onclick="toggleMic()">
     <canvas id="orb" width="200" height="200"></canvas>
     <div class="orb-ring" id="orb-ring"></div>
     <div class="orb-ring2" id="orb-ring2"></div>
   </div>
 
-  <div class="status" id="status">Tap orb to speak</div>
+    
   <div class="qtext" id="qtext"></div>
 
   <div class="controls">
@@ -735,6 +736,7 @@ async function toggleMic() {
 function loadQuestion() {
   const q = questions[idx];
   if (!q) return;
+  console.log('Loading question:', idx, q);
   document.getElementById('q-num').textContent = idx + 1;
   document.getElementById('q-total').textContent = questions.length;
   document.getElementById('qtext').textContent = q.question;
