@@ -488,7 +488,7 @@ function drawOrb(vol) {
     const z = ry*Math.cos(p.phi);
     const depth = (z + p.r*boost) / (2*p.r*boost);
     const alpha = baseAlpha * depth * (0.6 + 0.4*depth);
-    const size = 0.9 * depth;
+    const size = Math.max(0.1, 0.9 * depth);
     ctx.beginPath();
     ctx.arc(x, y, size, 0, Math.PI*2);
     ctx.fillStyle = `rgba(${dotColor[0]},${dotColor[1]},${dotColor[2]},${alpha})`;
