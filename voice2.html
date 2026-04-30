@@ -7,66 +7,69 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#0a0a0a;font-family:'Segoe UI',sans-serif;color:#fff;height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-
-/* MODE SELECT SCREEN */
-.mode-screen{display:flex;flex-direction:column;align-items:center;gap:2rem;padding:2rem;}
+.mode-screen{display:flex;flex-direction:column;align-items:center;gap:1.75rem;padding:2rem;}
 .mode-screen h2{font-size:1.4rem;font-weight:500;color:#ccc;}
-.mode-screen p{color:#444;font-size:13px;text-align:center;max-width:320px;}
+.mode-screen p{color:#444;font-size:13px;text-align:center;max-width:320px;line-height:1.6;}
 .mode-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
-.mode-card{width:200px;background:#0d0d1e;border:1px solid #1e1e3a;border-radius:16px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.25s;}
+.mode-card{width:195px;background:#0d0d1e;border:1px solid #1e1e3a;border-radius:16px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.25s;}
 .mode-card:hover{transform:translateY(-3px);}
 .mode-card.friendly:hover,.mode-card.friendly.selected{border-color:#7F77DD;background:#0d0d28;}
 .mode-card.ruthless:hover,.mode-card.ruthless.selected{border-color:#e24b4a;background:#1a0d0d;}
-.mode-icon{font-size:2.5rem;margin-bottom:0.75rem;}
-.mode-title{font-size:15px;font-weight:600;margin-bottom:6px;}
+.mode-icon{font-size:2.2rem;margin-bottom:0.6rem;}
+.mode-title{font-size:15px;font-weight:600;margin-bottom:5px;}
 .mode-card.friendly .mode-title{color:#9D96E8;}
 .mode-card.ruthless .mode-title{color:#e24b4a;}
 .mode-desc{font-size:11px;color:#444;line-height:1.6;}
-.start-voice-btn{background:linear-gradient(135deg,#7F77DD,#534AB7);color:#fff;border:none;padding:14px 40px;border-radius:24px;font-size:15px;font-weight:600;cursor:pointer;opacity:0.4;pointer-events:none;transition:all 0.3s;}
+.start-voice-btn{background:linear-gradient(135deg,#7F77DD,#534AB7);color:#fff;border:none;padding:13px 38px;border-radius:24px;font-size:15px;font-weight:600;cursor:pointer;opacity:0.4;pointer-events:none;transition:all 0.3s;}
 .start-voice-btn.ready{opacity:1;pointer-events:all;}
-.start-voice-btn.ready:hover{opacity:0.9;}
 
-/* INTERVIEW SCREEN */
+/* INTERVIEW */
 .interview-screen{display:none;flex-direction:column;align-items:center;width:100%;padding:0 1rem;}
-.back{position:fixed;top:20px;left:20px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:20px;padding:8px 16px;color:#555;font-size:12px;cursor:pointer;text-decoration:none;z-index:10;}
-.mode-badge{position:fixed;top:20px;right:20px;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.5px;}
+.back-btn{position:fixed;top:20px;left:20px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:20px;padding:8px 16px;color:#555;font-size:12px;cursor:pointer;}
+.mode-badge{position:fixed;top:20px;right:20px;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;}
 .mode-badge.friendly{background:rgba(127,119,221,0.15);border:0.5px solid rgba(127,119,221,0.3);color:#9D96E8;}
 .mode-badge.ruthless{background:rgba(226,75,74,0.12);border:0.5px solid rgba(226,75,74,0.3);color:#e24b4a;}
 .dots{position:fixed;top:24px;left:50%;transform:translateX(-50%);display:flex;gap:6px;}
 .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.1);transition:background 0.3s;}
-.dot.active{background:#9D96E8;}
-.dot.done{background:rgba(127,119,221,0.3);}
-.orb-wrap{margin-bottom:28px;position:relative;}
-.status{font-size:14px;color:#555;margin-bottom:12px;min-height:20px;text-align:center;transition:color 0.4s;}
+.dot.active{background:#9D96E8;} .dot.done{background:rgba(127,119,221,0.3);}
+
+/* TIMER */
+.timer-wrap{position:fixed;top:60px;left:50%;transform:translateX(-50%);}
+.timer{font-size:11px;color:#333;letter-spacing:1px;}
+.timer.warning{color:#FF9800;}
+.timer.danger{color:#e24b4a;}
+
+.orb-wrap{margin-bottom:24px;}
+.status{font-size:14px;color:#555;margin-bottom:10px;min-height:20px;text-align:center;transition:color 0.4s;}
 .status.ai-speaking{color:#9D96E8;}
 .status.listening{color:#20c9a6;}
-.status.processing{color:#FF9800;}
-.qtext{font-size:13px;color:rgba(255,255,255,0.3);text-align:center;max-width:360px;line-height:1.7;margin-bottom:40px;min-height:44px;transition:color 0.3s;}
+.status.warning{color:#FF9800;}
+.status.danger{color:#e24b4a;}
+.qtext{font-size:13px;color:rgba(255,255,255,0.3);text-align:center;max-width:380px;line-height:1.7;margin-bottom:36px;min-height:44px;}
 .qtext.active{color:rgba(255,255,255,0.55);}
+
+/* RELEVANCE WARNING */
+.relevance-warning{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a0505;border:1px solid #e24b4a;border-radius:12px;padding:1.25rem 1.75rem;text-align:center;z-index:100;display:none;max-width:340px;}
+.rw-title{color:#e24b4a;font-size:15px;font-weight:600;margin-bottom:6px;}
+.rw-msg{color:#888;font-size:13px;line-height:1.5;}
+
 .controls{display:flex;gap:20px;align-items:center;}
 .cbtn{border:none;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all 0.3s;}
-.cbtn-sm{width:52px;height:52px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);}
-.cbtn-sm:hover{background:rgba(255,255,255,0.1);}
 .cbtn-end{width:52px;height:52px;background:rgba(226,75,74,0.08);border:0.5px solid rgba(226,75,74,0.2);}
 .cbtn-mic{width:68px;height:68px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);}
 .cbtn-mic.ai-speaking{border-color:rgba(127,119,221,0.6);background:rgba(127,119,221,0.1);}
 .cbtn-mic.listening{border-color:rgba(32,201,166,0.6);background:rgba(32,201,166,0.1);}
 .cbtn-next{width:52px;height:52px;background:rgba(127,119,221,0.1);border:0.5px solid rgba(127,119,221,0.25);}
-.cbtn-next:hover{background:rgba(127,119,221,0.2);}
 
 /* LOADING */
 .loading-overlay{position:fixed;inset:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:50;}
 .spinner{width:40px;height:40px;border:2px solid #1a1a1a;border-top-color:#7F77DD;border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .loading-txt{color:#444;font-size:13px;}
-
-/* TRANSCRIPT (hidden debug) */
-.transcript-box{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);border:0.5px solid #1e1e3a;border-radius:8px;padding:8px 16px;font-size:11px;color:#444;max-width:400px;text-align:center;display:none;}
 </style>
 </head>
 <body>
 
-<!-- LOADING -->
 <div class="loading-overlay" id="loader">
   <div class="spinner"></div>
   <div class="loading-txt" id="loader-txt">Loading your interview...</div>
@@ -75,31 +78,28 @@ body{background:#0a0a0a;font-family:'Segoe UI',sans-serif;color:#fff;height:100v
 <!-- MODE SELECT -->
 <div class="mode-screen" id="mode-screen" style="display:none;">
   <h2>Choose Your Interview Style</h2>
-  <p>This determines how your AI interviewer will behave during the session</p>
-
+  <p>Select how your AI interviewer will behave. You have <strong style="color:#ccc;">1 minute</strong> per answer.</p>
   <div class="mode-cards">
     <div class="mode-card friendly" onclick="selectMode('friendly')">
       <div class="mode-icon">😊</div>
       <div class="mode-title">Friendly</div>
-      <div class="mode-desc">Supportive and encouraging. Great for practice and building confidence.</div>
+      <div class="mode-desc">Supportive and encouraging. Great for building confidence and practice.</div>
     </div>
     <div class="mode-card ruthless" onclick="selectMode('ruthless')">
       <div class="mode-icon">😤</div>
       <div class="mode-title">Ruthless</div>
-      <div class="mode-desc">Senior tech lead energy. Challenges every answer. High pressure. Real MNC feel.</div>
+      <div class="mode-desc">Senior tech lead. No mercy. Challenges every answer. Real MNC pressure.</div>
     </div>
   </div>
-
-  <button class="start-voice-btn" id="start-voice-btn" onclick="startVapi()">
-    Start Interview →
-  </button>
+  <button class="start-voice-btn" id="start-btn" onclick="beginInterview()">Start Interview →</button>
 </div>
 
 <!-- INTERVIEW -->
 <div class="interview-screen" id="interview-screen">
-  <a class="back" onclick="endInterview()">← End</a>
+  <button class="back-btn" onclick="endInterview()">← End</button>
   <div class="mode-badge" id="mode-badge"></div>
   <div class="dots" id="dots"></div>
+  <div class="timer-wrap"><div class="timer" id="timer"></div></div>
 
   <div class="orb-wrap">
     <canvas id="orb" width="220" height="220"></canvas>
@@ -109,101 +109,72 @@ body{background:#0a0a0a;font-family:'Segoe UI',sans-serif;color:#fff;height:100v
   <p class="qtext" id="qtext"></p>
 
   <div class="controls">
-    <button class="cbtn cbtn-end" onclick="endInterview()" title="End interview">
+    <button class="cbtn cbtn-end" onclick="endInterview()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e24b4a" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
     <button class="cbtn cbtn-mic" id="micbtn">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
     </button>
-    <button class="cbtn cbtn-next" onclick="skipQuestion()" title="Skip question">
+    <button class="cbtn cbtn-next" onclick="skipQuestion()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9D96E8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
   </div>
 </div>
 
-<div class="transcript-box" id="transcript"></div>
+<!-- RELEVANCE WARNING POPUP -->
+<div class="relevance-warning" id="rel-warning">
+  <div class="rw-title" id="rw-title">⚠️ Off Topic</div>
+  <div class="rw-msg" id="rw-msg"></div>
+</div>
 
-<!-- Vapi SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/vapi.js"></script>
-
 <script>
 const VAPI_KEY = "c03fee34-9c21-4bfb-87ed-ef719024b04e";
 const VAPI_ASSISTANT_ID = "f52322ad-6ee6-46a6-806f-bfaef757361a";
 const API = "https://interview-rag-agent.onrender.com";
 
+// Timings
+const RELEVANCE_CHECK_SEC = 9;  // check relevance after 9 seconds
+const HARD_LIMIT_SEC = 45;       // real cutoff
+const DISPLAY_LIMIT_SEC = 60;    // what user sees
+
 let vapi = null;
 let selectedMode = null;
-let questions = [];
-let answers = [];
-let currentQ = 0;
-let smoothVol = 0;
-let t = 0;
-let orbState = 'idle'; // idle | speaking | listening
+let questions = [], answers = [], currentQ = 0;
+let smoothVol = 0, t = 0, orbState = 'idle';
 let callActive = false;
-let transcriptBuffer = '';
 
-// ── System Prompts ──
-const FRIENDLY_PROMPT = `You are a warm, supportive AI Interview Coach conducting a mock interview. 
+// Per-question state
+let answerStartTime = null;
+let partialTranscript = '';
+let fullTranscript = '';
+let relevanceChecked = false;
+let relevanceAttempt = 0; // 0=first, 1=second chance
+let relevanceTimer = null;
+let hardLimitTimer = null;
+let countdownInterval = null;
 
-Your behavior:
-1. Ask exactly these questions one by one in order — do not skip or add questions
-2. After each answer, respond encouragingly: "Good answer!", "Nice point!", "I like that" then move on
-3. If the candidate struggles, gently guide: "Take your time", "Think about a real example"
-4. Keep acknowledgments SHORT — max 1 sentence before next question
-5. Be patient, professional, and encouraging throughout
-6. After the final question say exactly: "Wonderful session! Thank you for completing the interview. Please click View Results to see your detailed score."
-7. Do NOT evaluate scores during the interview`;
-
-const RUTHLESS_PROMPT = `You are a senior tech lead at a top MNC conducting a high-pressure final round technical interview.
-
-Your behavior:
-1. Ask exactly these questions one by one in order — do not skip or add questions
-2. After each answer, challenge it immediately:
-   - If vague: "That's too generic. Give me a specific real-world example with numbers."
-   - If weak: "A fresher would say that. Think deeper. What's the actual technical reason?"
-   - If strong: "Fine. Next question." (move on quickly, minimal praise)
-   - If very strong: "Acceptable. Let's continue."
-3. Push follow-ups: "But what if the dataset had 50 million rows?", "How would you optimize that?"
-4. Be cold, direct, and unimpressed easily. Create pressure.
-5. Never accept the first answer without at least one challenge
-6. Keep your responses SHORT and sharp — no long speeches
-7. After the final question say exactly: "Interview complete. Click View Results for your evaluation."
-8. Do NOT evaluate scores during the interview`;
-
-// ── Orb Canvas ──
+// ── ORB ──
 const canvas = document.getElementById('orb');
 const ctx = canvas.getContext('2d');
 const W=220,H=220,CX=W/2,CY=H/2;
-const N=750;
-const pts=[];
+const N=750, pts=[];
 for(let i=0;i<N;i++){
   const u=Math.random(),v=Math.random();
-  pts.push({
-    theta:2*Math.PI*u,
-    phi:Math.acos(2*v-1),
-    r:78+Math.random()*10,
-    ox:Math.random()*Math.PI*2,
-    oy:Math.random()*Math.PI*2,
-    sp:0.002+Math.random()*0.003,
-    sz:0.35+Math.random()*1.1,
-    alpha:0.15+Math.random()*0.5
-  });
+  pts.push({theta:2*Math.PI*u,phi:Math.acos(2*v-1),r:78+Math.random()*10,
+    ox:Math.random()*Math.PI*2,oy:Math.random()*Math.PI*2,
+    sp:0.002+Math.random()*0.003,sz:0.35+Math.random()*1.1,alpha:0.15+Math.random()*0.5});
 }
 
 function drawOrb(){
   requestAnimationFrame(drawOrb);
   ctx.clearRect(0,0,W,H);
   t+=0.014;
-
-  let targetVol = 0;
-  if(orbState==='speaking') targetVol = 0.3+Math.sin(t*6)*0.25;
-  else if(orbState==='listening') targetVol = 0.15+Math.sin(t*8)*0.15;
-  smoothVol += (targetVol - smoothVol)*0.12;
-
-  const breathe=1+Math.sin(t*0.85)*0.022;
-  const voice=1+smoothVol*2.8;
-  const scale=breathe*voice;
-
+  let tv=0;
+  if(orbState==='speaking') tv=0.3+Math.sin(t*6)*0.25;
+  else if(orbState==='listening') tv=0.12+Math.sin(t*8)*0.12;
+  smoothVol+=(tv-smoothVol)*0.12;
+  const scale=(1+Math.sin(t*0.85)*0.022)*(1+smoothVol*2.8);
   const sorted=[...pts].sort((a,b)=>a.r*Math.cos(a.phi)-b.r*Math.cos(b.phi));
   sorted.forEach(p=>{
     p.ox+=p.sp*0.8; p.oy+=p.sp;
@@ -216,19 +187,11 @@ function drawOrb(){
     const a=Math.min(p.alpha*(0.25+zn*0.75)*(1+smoothVol*1.2),0.92);
     const sz=Math.min(p.sz*(0.35+zn*0.85)*(1+smoothVol*1.8),3.2);
     ctx.beginPath(); ctx.arc(x,y,sz,0,Math.PI*2);
-
     if(orbState==='speaking'){
-      // Purple when AI speaks
-      const rv=Math.floor(80+zn*60+smoothVol*40);
-      const gv=Math.floor(60+zn*40);
-      const bv=Math.floor(180+zn*60+smoothVol*40);
-      ctx.fillStyle=`rgba(${rv},${gv},${bv},${a})`;
+      ctx.fillStyle=`rgba(${Math.floor(80+zn*60)},${Math.floor(60+zn*40)},${Math.floor(180+zn*60)},${a})`;
     } else if(orbState==='listening'){
-      // Teal when listening
-      const gv=Math.floor(150+zn*80+smoothVol*60);
-      ctx.fillStyle=`rgba(10,${gv},140,${a})`;
+      ctx.fillStyle=`rgba(10,${Math.floor(150+zn*80)},140,${a})`;
     } else {
-      // Grey idle
       const b=Math.floor(100+zn*100);
       ctx.fillStyle=`rgba(${b},${b},${b},${a})`;
     }
@@ -237,18 +200,15 @@ function drawOrb(){
 }
 drawOrb();
 
-// ── Dots ──
+// ── DOTS ──
 function renderDots(){
-  const el=document.getElementById('dots');
-  el.innerHTML='';
+  const el=document.getElementById('dots'); el.innerHTML='';
   questions.forEach((_,i)=>{
     const d=document.createElement('div');
     d.className='dot'+(i===0?' active':'');
-    d.id='dot-'+i;
-    el.appendChild(d);
+    d.id='dot-'+i; el.appendChild(d);
   });
 }
-
 function updateDot(idx){
   questions.forEach((_,i)=>{
     const d=document.getElementById('dot-'+i);
@@ -256,171 +216,279 @@ function updateDot(idx){
   });
 }
 
-// ── Mode Select ──
+// ── MODE ──
 function selectMode(mode){
-  selectedMode = mode;
+  selectedMode=mode;
   document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
   document.querySelector('.mode-card.'+mode).classList.add('selected');
-  document.getElementById('start-voice-btn').classList.add('ready');
-
-  // Update start button color for ruthless
-  if(mode==='ruthless'){
-    document.getElementById('start-voice-btn').style.background='linear-gradient(135deg,#e24b4a,#a33)';
-  } else {
-    document.getElementById('start-voice-btn').style.background='linear-gradient(135deg,#7F77DD,#534AB7)';
-  }
+  const btn=document.getElementById('start-btn');
+  btn.classList.add('ready');
+  btn.style.background=mode==='ruthless'
+    ?'linear-gradient(135deg,#e24b4a,#a33)'
+    :'linear-gradient(135deg,#7F77DD,#534AB7)';
 }
 
-// ── Init ──
-window.onload = () => {
-  const stored = sessionStorage.getItem('voiceSession');
-  if(!stored){
-    document.getElementById('loader-txt').textContent='No session found. Go back and upload your resume.';
-    return;
-  }
-  const data = JSON.parse(stored);
-  questions = data.questions || [];
-  answers = new Array(questions.length).fill('');
-
+// ── INIT ──
+window.onload=()=>{
+  const stored=sessionStorage.getItem('voiceSession');
+  if(!stored){ document.getElementById('loader-txt').textContent='No session. Go back and upload resume.'; return; }
+  const data=JSON.parse(stored);
+  questions=data.questions||[];
+  answers=new Array(questions.length).fill('');
   document.getElementById('loader').style.display='none';
   document.getElementById('mode-screen').style.display='flex';
 };
 
-// ── Start Vapi ──
-async function startVapi(){
-  if(!selectedMode) return;
+// ── PROMPTS ──
+const FRIENDLY_PROMPT=`You are a warm supportive AI Interview Coach conducting a mock interview.
+Rules:
+1. Ask these questions EXACTLY one by one in order
+2. After each answer say ONE short encouraging line then move on immediately
+3. If candidate struggles say "Take your time" — give one more chance
+4. Hard rule: candidate has 1 minute per answer max
+5. After final question say exactly: "Wonderful session! Please click View Results to see your score."
+6. Do NOT evaluate during interview
 
+Questions:
+QUESTIONS_PLACEHOLDER`;
+
+const RUTHLESS_PROMPT=`You are a brutal senior tech lead at a top MNC. High pressure final round.
+Rules:
+1. Ask these questions EXACTLY one by one in order
+2. After each answer CHALLENGE it immediately:
+   - Vague answer: "Too generic. Give me specifics. Numbers. Real scenario."
+   - Weak answer: "That is a fresher-level answer. Think deeper."
+   - Off-topic: "That is completely irrelevant. Stop wasting my time."
+   - Strong answer: "Fine. Next." — move on fast
+3. Each candidate gets MAX 1 minute per answer — then move on regardless
+4. Be cold, direct, harsh. Minimal praise.
+5. After final question say exactly: "Interview complete. Click View Results."
+6. Do NOT evaluate scores during interview
+
+Questions:
+QUESTIONS_PLACEHOLDER`;
+
+// ── START ──
+async function beginInterview(){
+  if(!selectedMode) return;
   document.getElementById('mode-screen').style.display='none';
   document.getElementById('loader').style.display='flex';
   document.getElementById('loader-txt').textContent='Connecting to AI interviewer...';
 
-  // Build question list for prompt
-  const qList = questions.map((q,i)=>`${i+1}. ${q.question}`).join('\n');
-  const systemPrompt = (selectedMode==='friendly'?FRIENDLY_PROMPT:RUTHLESS_PROMPT)
-    + `\n\nHere are the interview questions to ask in order:\n${qList}`;
+  const qList=questions.map((q,i)=>`${i+1}. ${q.question}`).join('\n');
+  const prompt=(selectedMode==='friendly'?FRIENDLY_PROMPT:RUTHLESS_PROMPT).replace('QUESTIONS_PLACEHOLDER',qList);
+  const firstMsg=selectedMode==='friendly'
+    ?"Hello! I am your AI Interview Coach. I am here to help you practice. Let us begin when you are ready!"
+    :"Let us begin. I expect clear, specific, technical answers. No vague responses. Ready?";
 
-  const firstMsg = selectedMode==='friendly'
-    ? "Hello! I'm your AI Interview Coach today. I'm here to help you practice and grow. Let's have a great session! Ready to begin?"
-    : "Let's get started. I'll be direct — this is a high-pressure interview. I expect clear, specific answers. Are you ready?";
-
-  try {
-    vapi = new Vapi(VAPI_KEY);
+  try{
+    vapi=new Vapi(VAPI_KEY);
     setupVapiEvents();
-
-    await vapi.start(VAPI_ASSISTANT_ID, {
-      assistantOverrides: {
-        firstMessage: firstMsg,
-        model: {
-          provider: "openai",
-          model: "gpt-4o-mini",
-          messages: [{ role: "system", content: systemPrompt }]
-        }
+    await vapi.start(VAPI_ASSISTANT_ID,{
+      assistantOverrides:{
+        firstMessage:firstMsg,
+        model:{provider:"openai",model:"gpt-4o-mini",
+          messages:[{role:"system",content:prompt}]}
       }
     });
-
-  } catch(e) {
-    console.error('Vapi error:', e);
-    fallbackToWebSpeech();
-  }
+  } catch(e){ console.error(e); fallbackToWebSpeech(); }
 }
 
-// ── Vapi Events ──
+// ── VAPI EVENTS ──
 function setupVapiEvents(){
-  vapi.on('call-start', ()=>{
-    callActive = true;
+  vapi.on('call-start',()=>{
+    callActive=true;
     document.getElementById('loader').style.display='none';
     document.getElementById('interview-screen').style.display='flex';
-
-    const badge = document.getElementById('mode-badge');
-    badge.textContent = selectedMode==='friendly' ? '😊 Friendly Mode' : '😤 Ruthless Mode';
-    badge.className = 'mode-badge '+selectedMode;
-
+    const b=document.getElementById('mode-badge');
+    b.textContent=selectedMode==='friendly'?'😊 Friendly':'😤 Ruthless';
+    b.className='mode-badge '+selectedMode;
     renderDots();
-    setStatus('AI is speaking...','ai-speaking');
     orbState='speaking';
+    setStatus('AI is speaking...','ai-speaking');
   });
 
-  vapi.on('speech-start', ()=>{
+  vapi.on('speech-start',()=>{
     orbState='speaking';
     setStatus('AI is speaking...','ai-speaking');
     document.getElementById('micbtn').className='cbtn cbtn-mic ai-speaking';
+    stopTimers();
   });
 
-  vapi.on('speech-end', ()=>{
+  vapi.on('speech-end',()=>{
+    // AI finished speaking — candidate's turn
     orbState='listening';
-    setStatus('Listening to you...','listening');
+    setStatus('Your turn — speak now','listening');
     document.getElementById('micbtn').className='cbtn cbtn-mic listening';
+    startAnswerTimers();
   });
 
-  vapi.on('volume-level', (vol)=>{
+  vapi.on('volume-level',(vol)=>{
     if(orbState==='listening') smoothVol=vol*0.8;
   });
 
-  vapi.on('message', (msg)=>{
+  vapi.on('message',(msg)=>{
     if(msg.type==='transcript'){
-      const text = msg.transcript || '';
+      const text=msg.transcript||'';
+
       if(msg.role==='assistant'){
-        // detect which question is being asked
+        // detect question index
         questions.forEach((q,i)=>{
-          if(text.includes(q.question.substring(0,30))){
-            currentQ=i;
-            updateDot(i);
+          if(text.includes(q.question.substring(0,25))){
+            currentQ=i; updateDot(i);
             document.getElementById('qtext').textContent=q.question;
             document.getElementById('qtext').classList.add('active');
+            resetQuestionState();
           }
         });
-        // detect end
-        if(text.includes('View Results') || text.includes('Click View Results')){
-          setTimeout(()=>endAndSubmit(), 3000);
+        if(text.includes('View Results')||text.includes('Click View Results')){
+          stopTimers();
+          setTimeout(()=>endAndSubmit(),2500);
         }
       }
-      if(msg.role==='user'){
-        answers[currentQ] = (answers[currentQ]||'') + ' ' + text;
-        document.getElementById('transcript').textContent='You: '+text;
-        document.getElementById('transcript').style.display='block';
+
+      if(msg.role==='user'&&msg.transcriptType==='final'){
+        fullTranscript+=' '+text;
+        partialTranscript=text;
+        answers[currentQ]=(answers[currentQ]||'')+' '+text;
       }
     }
   });
 
-  vapi.on('call-end', ()=>{
-    callActive=false;
+  vapi.on('call-end',()=>{ callActive=false; orbState='idle'; stopTimers(); });
+  vapi.on('error',(e)=>{ console.error(e); fallbackToWebSpeech(); });
+}
+
+// ── TIMER & RELEVANCE ──
+function startAnswerTimers(){
+  answerStartTime=Date.now();
+  relevanceChecked=false;
+  relevanceAttempt=0;
+  partialTranscript='';
+  fullTranscript='';
+
+  // Relevance check after 9 seconds
+  relevanceTimer=setTimeout(()=>{ runRelevanceCheck(); }, RELEVANCE_CHECK_SEC*1000);
+
+  // Hard limit at 45 seconds (shown as 1 min)
+  hardLimitTimer=setTimeout(()=>{
+    stopTimers();
+    setStatus('Time is up. Moving on.','danger');
     orbState='idle';
-    if(answers.some(a=>a.trim())) endAndSubmit();
-  });
+  }, HARD_LIMIT_SEC*1000);
 
-  vapi.on('error', (e)=>{
-    console.error('Vapi error:', e);
-    fallbackToWebSpeech();
-  });
+  // Countdown display (shows 60 → 0 but real limit is 45)
+  startCountdown();
 }
 
-function setStatus(text, cls){
+function startCountdown(){
+  let display=DISPLAY_LIMIT_SEC;
+  const el=document.getElementById('timer');
+  el.textContent='⏱ '+display+'s remaining';
+  el.className='timer';
+  countdownInterval=setInterval(()=>{
+    display--;
+    if(display<=0){ clearInterval(countdownInterval); el.textContent=''; return; }
+    el.textContent='⏱ '+display+'s remaining';
+    el.className='timer'+(display<=20?' danger':display<=35?' warning':'');
+  },1000);
+}
+
+function stopTimers(){
+  if(relevanceTimer){ clearTimeout(relevanceTimer); relevanceTimer=null; }
+  if(hardLimitTimer){ clearTimeout(hardLimitTimer); hardLimitTimer=null; }
+  if(countdownInterval){ clearInterval(countdownInterval); countdownInterval=null; }
+  document.getElementById('timer').textContent='';
+}
+
+function resetQuestionState(){
+  stopTimers();
+  relevanceChecked=false;
+  relevanceAttempt=0;
+  partialTranscript='';
+  fullTranscript='';
+  hideRelevanceWarning();
+}
+
+async function runRelevanceCheck(){
+  if(relevanceChecked) return;
+  const chunk=partialTranscript.trim()||fullTranscript.trim();
+  if(!chunk||chunk.length<8) return; // nothing spoken yet
+
+  try{
+    const res=await fetch(API+'/check-relevance',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        question:questions[currentQ]?.question||'',
+        answer_chunk:chunk
+      })
+    });
+    const data=await res.json();
+
+    if(!data.relevant){
+      relevanceAttempt++;
+      if(relevanceAttempt===1){
+        // First strike
+        const msg=selectedMode==='ruthless'
+          ?"Stop. That is completely off topic. I don't have time for this. Give me a proper answer right now."
+          :"That doesn't seem related to the question. Let's try again — focus on the question asked.";
+        showRelevanceWarning('⚠️ Off Topic',msg);
+        // Give second chance — check again after 9 more seconds
+        relevanceTimer=setTimeout(()=>runRelevanceCheck(),RELEVANCE_CHECK_SEC*1000);
+      } else {
+        // Second strike — force move on
+        const msg=selectedMode==='ruthless'
+          ?"Clearly unprepared. I'm moving on."
+          :"No worries, let's move to the next question.";
+        showRelevanceWarning('❌ Moving On',msg);
+        setTimeout(()=>{ hideRelevanceWarning(); skipQuestion(); },2500);
+      }
+    } else {
+      relevanceChecked=true;
+      hideRelevanceWarning();
+      // Relevant — let them speak, hard limit still applies
+    }
+  } catch(e){ console.error('Relevance check failed:',e); }
+}
+
+function showRelevanceWarning(title,msg){
+  document.getElementById('rw-title').textContent=title;
+  document.getElementById('rw-msg').textContent=msg;
+  document.getElementById('rel-warning').style.display='block';
+  setTimeout(()=>hideRelevanceWarning(),4000);
+}
+function hideRelevanceWarning(){ document.getElementById('rel-warning').style.display='none'; }
+
+function setStatus(txt,cls){
   const el=document.getElementById('status');
-  el.textContent=text;
-  el.className='status '+(cls||'');
+  el.textContent=txt; el.className='status '+(cls||'');
 }
 
-// ── End & Submit ──
-async function endAndSubmit(){
-  if(!answers.some(a=>a.trim())){
-    window.location.href='index.html';
-    return;
-  }
+// ── SKIP ──
+function skipQuestion(){
+  stopTimers(); hideRelevanceWarning();
+  currentQ=Math.min(currentQ+1,questions.length-1);
+  updateDot(currentQ);
+  document.getElementById('qtext').textContent=questions[currentQ]?.question||'';
+  resetQuestionState();
+}
 
+// ── SUBMIT ──
+async function endAndSubmit(){
+  stopTimers();
   document.getElementById('loader').style.display='flex';
   document.getElementById('loader-txt').textContent='Evaluating your performance...';
   document.getElementById('interview-screen').style.display='none';
 
-  const finalAnswers = answers.map((a,i)=>a.trim()||'No answer provided for question '+(i+1));
-
-  try {
-    const res = await fetch(API+'/submit-answers',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
+  const finalAnswers=answers.map((a,i)=>a.trim()||'No answer for question '+(i+1));
+  try{
+    const res=await fetch(API+'/submit-answers',{
+      method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({answers:finalAnswers})
     });
-    const data = await res.json();
-    sessionStorage.setItem('voiceResult', JSON.stringify(data));
+    const data=await res.json();
+    sessionStorage.setItem('voiceResult',JSON.stringify(data));
     window.location.href='results.html';
   } catch(e){
     document.getElementById('loader-txt').textContent='Error submitting. Please try again.';
@@ -428,83 +496,65 @@ async function endAndSubmit(){
 }
 
 function endInterview(){
-  if(confirm('End interview and go back to home?')){
-    if(vapi && callActive) vapi.stop();
+  if(confirm('End interview and go back?')){
+    stopTimers();
+    if(vapi&&callActive) vapi.stop();
     window.location.href='index.html';
   }
 }
 
-function skipQuestion(){
-  currentQ = Math.min(currentQ+1, questions.length-1);
-  updateDot(currentQ);
-  document.getElementById('qtext').textContent=questions[currentQ]?.question||'';
-}
-
-// ── Fallback: Web Speech API ──
+// ── FALLBACK: Web Speech ──
 function fallbackToWebSpeech(){
   document.getElementById('loader').style.display='none';
   document.getElementById('interview-screen').style.display='flex';
-
-  const badge=document.getElementById('mode-badge');
-  badge.textContent=selectedMode==='friendly'?'😊 Friendly (Fallback)':'😤 Ruthless (Fallback)';
-  badge.className='mode-badge '+selectedMode;
-
+  const b=document.getElementById('mode-badge');
+  b.textContent=selectedMode==='friendly'?'😊 Friendly':'😤 Ruthless';
+  b.className='mode-badge '+selectedMode;
   renderDots();
-  setStatus('Using browser voice (Vapi unavailable)','processing');
-
-  setTimeout(()=>speakQuestion(0), 1000);
+  setTimeout(()=>wsSpeakQuestion(0),800);
 }
 
-function speakQuestion(idx){
+function wsSpeakQuestion(idx){
   if(idx>=questions.length){endAndSubmit();return;}
-  currentQ=idx;
-  updateDot(idx);
+  currentQ=idx; updateDot(idx);
   const q=questions[idx];
   document.getElementById('qtext').textContent=q.question;
   document.getElementById('qtext').classList.add('active');
-
-  const prefix = selectedMode==='ruthless'
-    ? ['Listen carefully.','Next question.','Answer this.'][idx%3]+' '
-    : ['','Let me ask you: ','Here\'s the next one: '][idx%3];
-
-  const utt=new SpeechSynthesisUtterance(prefix+q.question);
+  resetQuestionState();
+  const utt=new SpeechSynthesisUtterance(q.question);
   utt.rate=selectedMode==='ruthless'?1.1:0.95;
   utt.pitch=selectedMode==='ruthless'?0.85:1.05;
-  orbState='speaking';
-  setStatus('AI is speaking...','ai-speaking');
-
+  orbState='speaking'; setStatus('AI is speaking...','ai-speaking');
   utt.onend=()=>{
-    orbState='listening';
-    setStatus('Your turn — speak your answer','listening');
-    listenAnswer(idx);
+    orbState='listening'; setStatus('Your turn — speak now','listening');
+    startAnswerTimers();
+    wsListenAnswer(idx);
   };
   speechSynthesis.speak(utt);
 }
 
-function listenAnswer(idx){
+function wsListenAnswer(idx){
   if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
     const ans=prompt('Type your answer for Q'+(idx+1)+':');
     answers[idx]=ans||'No answer';
-    speakQuestion(idx+1);
-    return;
+    stopTimers(); wsSpeakQuestion(idx+1); return;
   }
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   const rec=new SR();
-  rec.lang='en-US';
-  rec.continuous=false;
-  rec.interimResults=false;
+  rec.lang='en-US'; rec.continuous=true; rec.interimResults=true;
+  let finalAns='';
   rec.onresult=(e)=>{
-    answers[idx]=e.results[0][0].transcript;
-    document.getElementById('transcript').textContent='You: '+answers[idx];
-    document.getElementById('transcript').style.display='block';
-    setStatus('Got it. Moving on...','processing');
-    orbState='idle';
-    setTimeout(()=>speakQuestion(idx+1),1200);
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal) finalAns+=e.results[i][0].transcript+' ';
+      else interim+=e.results[i][0].transcript;
+    }
+    partialTranscript=interim||finalAns;
+    answers[idx]=finalAns;
   };
-  rec.onerror=()=>{
-    answers[idx]='No answer captured';
-    setTimeout(()=>speakQuestion(idx+1),800);
-  };
+  rec.onerror=()=>{ stopTimers(); wsSpeakQuestion(idx+1); };
+  // Stop listening at hard limit
+  setTimeout(()=>{ rec.stop(); stopTimers(); setTimeout(()=>wsSpeakQuestion(idx+1),800); },HARD_LIMIT_SEC*1000);
   rec.start();
 }
 </script>
