@@ -143,7 +143,7 @@
 
 <nav>
   <div class="logo">
-    <div class="logo-orb">=Æ’Ã„Â»</div>
+    <div class="logo-orb">=Ã†â€™Ãƒâ€žÃ‚Â»</div>
     AI Interview Coach
   </div>
   <div class="nav-badge">Powered by Groq AI</div>
@@ -156,15 +156,15 @@
     <p>Upload your resume -+ Get AI-tailored questions -+ Download your report</p>
   </div>
 
-  <div class="mode-selector" id="mode-selector"><button class="mode-opt friendly active" onclick="setInterviewMode('friendly')">Friendly</button><button class="mode-opt ruthless" onclick="setInterviewMode('ruthless')">Ruthless</button></div><div class="mode-tabs">
+  <div class="mode-selector" id="mode-selector" style="display:none;"><button class="mode-opt friendly active" onclick="setInterviewMode('friendly')">Friendly</button><button class="mode-opt ruthless" onclick="setInterviewMode('ruthless')">Ruthless</button></div><div class="mode-tabs">
     <button class="mode-tab active" onclick="setMode('general')">General</button>
     <button class="mode-tab" onclick="setMode('jd')">Job-Specific</button>
-    <button class="mode-tab" onclick="setMode('voice')">=Æ’Ã„Ã± Voice</button>
+    <button class="mode-tab" onclick="setMode('voice')">=Ã†â€™Ãƒâ€žÃƒÂ± Voice</button>
   </div>
 
   <div class="upload-card">
     <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-      <div class="drop-icon">=Æ’Ã´Ã¤</div>
+      <div class="drop-icon">=Ã†â€™ÃƒÂ´ÃƒÂ¤</div>
       <p class="drop-text">Drop your resume PDF here or click to browse</p>
       <button class="drop-btn" onclick="event.stopPropagation()">Browse File</button>
       <p class="file-name" id="file-name"></p>
@@ -176,7 +176,7 @@
     </div>
 
     <button class="start-btn" id="start-btn" onclick="startInterview()" disabled>
-      Start My Interview GÃ¥Ã†
+      Start My Interview GÃƒÂ¥Ãƒâ€ 
     </button>
   </div>
 
@@ -196,7 +196,7 @@
       <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
     </div>
     <div id="questions-container"></div>
-    <button class="submit-all-btn" onclick="submitAnswers()">Submit All Answers & Get Evaluated GÂ£Ã´</button>
+    <button class="submit-all-btn" onclick="submitAnswers()">Submit All Answers & Get Evaluated GÃ‚Â£ÃƒÂ´</button>
   </div>
 </div>
 
@@ -220,7 +220,7 @@
 
     <div id="evaluations-container"></div>
 
-    <button class="download-btn" onclick="downloadReport()">GÂ¼Ã§ Download PDF Report</button>
+    <button class="download-btn" onclick="downloadReport()">GÃ‚Â¼ÃƒÂ§ Download PDF Report</button>
     <button class="restart-btn" onclick="restart()">Start New Interview</button>
   </div>
 </div>
@@ -253,8 +253,8 @@
     <div class="voice-transcript" id="v-transcript">Your answer will appear here...</div>
 
     <div class="voice-controls">
-      <button class="voice-btn primary" id="v-mic-btn" onclick="toggleMic()">=Æ’Ã„Ã± Hold to Speak</button>
-      <button class="voice-btn secondary" onclick="nextVoiceQuestion()">Next GÃ¥Ã†</button>
+      <button class="voice-btn primary" id="v-mic-btn" onclick="toggleMic()">=Ã†â€™Ãƒâ€žÃƒÂ± Hold to Speak</button>
+      <button class="voice-btn secondary" onclick="nextVoiceQuestion()">Next GÃƒÂ¥Ãƒâ€ </button>
     </div>
   </div>
 </div>
@@ -293,7 +293,7 @@ function setMode(mode) { document.getElementById('mode-selector').classList.togg
 function handleFile(input) {
   selectedFile = input.files[0];
   if (selectedFile) {
-    document.getElementById('file-name').textContent = 'GÂ£Ã´ ' + selectedFile.name;
+    document.getElementById('file-name').textContent = 'GÃ‚Â£ÃƒÂ´ ' + selectedFile.name;
     document.getElementById('drop-zone').classList.add('has-file');
     document.getElementById('start-btn').disabled = false;
   }
@@ -371,8 +371,8 @@ function renderInterview(data) {
   container.innerHTML = '';
 
   data.questions.forEach((q, i) => {
-    const icons = {technical:'=Æ’Ã¶Âº', project:'=Æ’Ã´Ã¨', hr:'=Æ’Ã¦Ã‘', scenario:'=Æ’Ã†Ã­'};
-    const icon = icons[q.category] || 'GÂ¥Ã´';
+    const icons = {technical:'=Ã†â€™ÃƒÂ¶Ã‚Âº', project:'=Ã†â€™ÃƒÂ´ÃƒÂ¨', hr:'=Ã†â€™ÃƒÂ¦Ãƒâ€˜', scenario:'=Ã†â€™Ãƒâ€ ÃƒÂ­'};
+    const icon = icons[q.category] || 'GÃ‚Â¥ÃƒÂ´';
     const diffClass = 'diff-' + q.difficulty;
     container.innerHTML += `
       <div class="question-card">
@@ -420,7 +420,7 @@ function renderResults(data) {
   document.getElementById('res-score2').textContent = score + '/10';
   document.getElementById('res-total').textContent = data.total_questions || 10;
   document.getElementById('res-role').textContent = data.role || '';
-  document.getElementById('res-status').textContent = 'GÂ£Ã´';
+  document.getElementById('res-status').textContent = 'GÃ‚Â£ÃƒÂ´';
 
   const vEl = document.getElementById('res-verdict');
   vEl.textContent = verdict;
@@ -510,8 +510,8 @@ async function startRecording() {
     mediaRecorder.onstop = processAudio;
     mediaRecorder.start();
     isRecording = true;
-    document.getElementById('v-mic-btn').textContent = 'GÃ…Â¦ Stop Recording';
-    document.getElementById('v-status').textContent = '=Æ’Ã¶Â¦ Recording... speak now';
+    document.getElementById('v-mic-btn').textContent = 'GÃƒâ€¦Ã‚Â¦ Stop Recording';
+    document.getElementById('v-status').textContent = '=Ã†â€™ÃƒÂ¶Ã‚Â¦ Recording... speak now';
     animateWaveform(true);
   } catch(e) {
     showToast('Microphone not available. Type your answer instead.');
@@ -528,7 +528,7 @@ function stopRecording() {
     mediaRecorder.stop();
     mediaRecorder.stream.getTracks().forEach(t => t.stop());
     isRecording = false;
-    document.getElementById('v-mic-btn').textContent = '=Æ’Ã„Ã± Hold to Speak';
+    document.getElementById('v-mic-btn').textContent = '=Ã†â€™Ãƒâ€žÃƒÂ± Hold to Speak';
     document.getElementById('v-status').textContent = 'Processing your answer...';
     animateWaveform(false);
   }
@@ -542,7 +542,7 @@ function processAudio() {
     const fakeTranscript = '[Voice answer recorded - will be transcribed by backend]';
     voiceAnswers[voiceIndex] = fakeTranscript;
     document.getElementById('v-transcript').textContent = fakeTranscript;
-    document.getElementById('v-status').textContent = 'GÂ£Ã´ Answer captured';
+    document.getElementById('v-status').textContent = 'GÃ‚Â£ÃƒÂ´ Answer captured';
   };
   reader.readAsDataURL(blob);
 }
