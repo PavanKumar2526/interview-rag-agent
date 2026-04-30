@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>AI Interview Coach — Voice</title>
+<title>AI Interview Coach ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Voice</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -74,7 +74,7 @@ canvas#orb { width: 200px; height: 200px; border-radius: 50%; }
 </head>
 <body>
 <div class="ambient"></div>
-<a class="back" href="index.html">← Back</a>
+<a class="back" href="index.html">ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Ãƒâ€šÃ‚Â Back</a>
 <div class="mode-badge" id="mode-badge">FRIENDLY</div>
 <div class="dots" id="dots"></div>
 
@@ -84,10 +84,10 @@ canvas#orb { width: 200px; height: 200px; border-radius: 50%; }
 </div>
 
 <div class="finish-screen" id="finish-screen">
-  <div class="finish-icon">✦</div>
+  <div class="finish-icon">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“Ãƒâ€šÃ‚Â¦</div>
   <div class="finish-title">Interview Complete</div>
   <div class="finish-sub">All questions answered. Evaluating your responses...</div>
-  <button class="finish-btn" onclick="submitAndRedirect()">View Results →</button>
+  <button class="finish-btn" onclick="submitAndRedirect()">View Results ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢</button>
 </div>
 
 <div class="ui" id="main-ui" style="display:none;">
@@ -273,6 +273,27 @@ function clearSpeakTimer() {
   if (userSpeakTimer) { clearTimeout(userSpeakTimer); userSpeakTimer = null; }
 }
 
+async function checkRelevance(answer, question) {
+  try {
+    const res = await fetch(API + '/check-relevance', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({answer: answer, question: question})
+    });
+    const data = await res.json();
+    if (data.relevant === false && vapi && callActive) {
+      vapi.send({
+        type: 'add-message',
+        message: {
+          role: 'system',
+          content: isRuthless
+            ? 'The candidate answer is completely irrelevant. INTERRUPT immediately. Say: "Irrelevant. Answer the question directly. Now." Do not wait.'
+            : 'The candidate seems off-topic. Gently redirect them. Say: "Let us refocus on the question. Can you address it directly?"'
+        }
+      });
+    }
+  } catch(e) { console.log('Relevance check failed', e); }
+}
 // --- Vapi Setup ---
 function initVapi() {
   vapi = new Vapi(VAPI_KEY);
@@ -297,11 +318,11 @@ function initVapi() {
     isSpeaking = true;
     setOrbListening(false);
     clearSpeakTimer();
-    setStatus('speaking', isRuthless ? '🔴 Interviewer speaking...' : 'AI is speaking...');
+    setStatus('speaking', isRuthless ? 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â´ Interviewer speaking...' : 'AI is speaking...');
   });
 
   vapi.on('speech-end', () => {
-    // AI finished — user's turn
+    // AI finished ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â user's turn
     isSpeaking = false;
     setOrbListening(true);
     startSpeakTimer(); // Start 45s countdown
@@ -319,6 +340,7 @@ function initVapi() {
       box.textContent = currentTranscript;
       box.classList.add('active', 'has-text');
       answers[idx] = currentTranscript;
+      if (currentTranscript.length > 30) { checkRelevance(currentTranscript, questions[idx].question); }
     }
     if (msg.type === 'transcript' && msg.role === 'assistant') {
       const text = (msg.transcript || '').toLowerCase();
