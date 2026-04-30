@@ -793,7 +793,7 @@ async function submitAndRedirect() {
       body: JSON.stringify(payload)
     });
     const data = await res.json();
-    sessionStorage.setItem('evalResults', JSON.stringify(data));
+    sessionStorage.setItem('voiceResult', JSON.stringify(data));
   } catch(e) {}
 
   window.location.href = 'results.html';
